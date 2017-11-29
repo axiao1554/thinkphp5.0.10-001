@@ -1,0 +1,10 @@
+
+	<h2>用户列表（{$count}）</h2>
+	{volist name='list' id="vo"}
+	用户名：{$vo.username}<br/>
+	性别：{$vo.sex}<br/>
+	注册时间：{$vo.regtime}<br/>
+	邮箱：{$vo.email}<br/>
+	<hr/>
+	{/volist}
+	{$list->render()}

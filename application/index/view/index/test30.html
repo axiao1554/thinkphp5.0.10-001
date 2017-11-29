@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="__STATIC__/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+	<!-- {$Request.session.name} -->  <!-- session显示 -->
+	<form action="{:url('Captcha/check')}" method="post">
+		验证码：
+		<input type="text" name="code">
+		<!-- <div id="code">{:captcha_img()}</div> -->
+		<img id="code" src="{:url('Captcha/index')}">
+		<input type="submit" value="提交">
+	</form>
+</body>
+</html>
+<script type="text/javascript">
+	// $("#code").click(function(){
+	// 	$(this).find('img').attr('src','/Captcha?r='+Math.random());
+	// })
+</script>
+<script type="text/javascript">
+	$("#code").click(function(){
+		$(this).attr('src',"{:url('Captcha/index')}?r="+Math.random());
+	})
+</script>

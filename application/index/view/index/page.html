@@ -1,0 +1,27 @@
+<h2>用户列表（{$count}）</h2>
+{volist name='list' id="vo"}
+用户名：{$vo.username}<br/>
+性别：{$vo.sex}<br/>
+注册时间：{$vo.regtime}<br/>
+邮箱：{$vo.email}<br/>
+<hr/>
+{/volist}
+{$list->render()}
+<input type="hidden" name="ajaxName" value="{$ajaxName}">
+<script type="text/javascript">
+	// ajax分页
+	$(".pagination a").click(function(){
+		var url=$(this).attr("href");
+		if(url){
+			getPage(url);
+		}
+		return false;
+	});
+	function getPage(url){
+		var name = $("input[name='ajaxName']").val();
+		$.get(url,{name:name}, function(result){
+			// alert(result);
+			$("#page").html(result);
+		});
+	}
+</script>

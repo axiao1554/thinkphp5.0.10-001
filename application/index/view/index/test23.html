@@ -1,0 +1,53 @@
+<!-- {layout name="layout" /} --><!-- config中开启layout可以去掉这行代码 -->   <!-- {__NOLAYOUT__} --><!-- 不需要调用时输出这行代码 -->
+{include file="index/header" title="这是第23个例子" keywords="thinkphp"/}
+	<!-- <form action="#" method="get"> -->
+		<input type="text" name="name" {if condition="$getname"}value="{$getname}"{/if}>
+		<input type="button" onclick="search()" value="搜索">
+	<!-- </form> -->
+	<div id="page">
+		<h2>用户列表（{$count}）</h2>
+		{volist name='list' id="vo"}
+		用户名：{$vo.username}<br/>
+		性别：{$vo.sex}<br/>
+		注册时间：{$vo.regtime}<br/>
+		邮箱：{$vo.email}<br/>
+		<hr/>
+		{/volist}
+		{$list->render()}
+		<script type="text/javascript">
+			// ajax分页
+			$(".pagination a").click(function(){
+				var url=$(this).attr("href");
+				if(url){
+					getPage(url);
+				}
+				return false;
+			});
+			function getPage(url){
+				$.get(url, function(result){
+					// alert(result);
+					$("#page").html(result);
+				});
+			}
+		</script>
+	</div>
+{include file="index/footer" /}
+<script type="text/javascript">
+	// function search(){
+	// 	var name = $("input[name='name']").val();
+	// 	if(name){
+	// 		window.location.assign("/test23Search/"+name);
+	// 	}else{
+	// 		window.location.assign("/test23");
+	// 	}
+	// }
+</script>
+<!-- ajax搜索 -->
+<script type="text/javascript">
+	function search(){
+		var name = $("input[name='name']").val();
+		$.post("/test23",{name:name},function(a){
+			$("#page").html(a);
+		})
+	}
+</script>

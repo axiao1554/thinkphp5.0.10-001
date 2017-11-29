@@ -1,0 +1,157 @@
+1.	return $this->fetch('index/hello'); 
+	$this->display();
+	单字母函数去掉了 如  M( ) D( ) U( ) S( ) C( )
+
+2.	getField方法
+	原来3.2版本的模型的getField方法应该如何使用？
+	原先模型类的getField方法，在5.0的数据库Query类中拆分成两个方法，一个value方法用于查询某个行的某个值和一个column方法用于查询某个列的值，用法如下：
+	查询某个字段的值可以用
+	Db::table('think_user')->where('id',1)->value('name');
+	原先的聚合查询方法依然有效，例如：
+	// 查询用户数
+	Db::table('think_user')->count();
+	// 查询用户的最高分
+	Db::table('think_user')->max('score')
+	查询某一列的值可以用
+	// 返回数组
+	Db::table('think_user')->where('status',1)->column('name');
+	// 指定id字段作为索引
+	Db::table('think_user')->where('status',1)->column('name','id');
+
+3.	控制器不区分URL的大小写
+	http://serverName/index/UserType/addType
+
+4.	<volist name="list" id="vo">
+	{$vo.id}:{$vo.name}
+	</volist>
+	改为
+	{volist name="list" id="vo"}
+	{$vo.id}:{$vo.name}
+	{/volist}
+
+5.	控制器的类名默认不带Controller后缀 模型类的后缀不再带Model
+	3.2版本和5版本 数据库操作写法不一样
+	M('User')->where(['name'=>'thinkphp'])->find();
+	db('User')->where('name','thinkphp')->find();
+	模型 3.2版本 和 5版本区别
+	D('User')->where(['name'=>'thinkphp'])->find();
+	model('User')->where('name','thinkphp')->find();
+
+6.	请求对象和响应对象
+	5.0新增了请求对象Request和响应对象Response，Request统一处理请求和获取请求信息，Response对象负责输出客户端或者浏览器响应
+
+7.	常量简化
+	5.0版本废弃了原来的大部分常量定义，仅仅保留了框架的路径常量定义，其余的常量可以使用App类或者Request类的相关属性或者方法来完成，或者自己重新定义需要的常量
+	REQUEST_METHOD 
+	IS_GET 
+	IS_POST 
+	IS_PUT 
+	IS_DELETE 
+	IS_AJAX 
+	__EXT__ 
+	COMMON_MODULE 
+	MODULE_NAME 
+	CONTROLLER_NAME 
+	ACTION_NAME 
+	APP_NAMESPACE 
+	APP_DEBUG MODULE_PATH
+8.tp5使用的路径
+	[__ROOT__] => 
+        [__URL__] => /index/index     //本模块本控制器下
+	{:url('Captcha/index')}		//本模块其他控制器下
+	{:url('index/Captcha/index')}	//其他模块其他控制器下
+        [__STATIC__] => /static
+        [__CSS__] => /static/css
+        [__JS__] => /static/js
+9.函数助手
+	快速实例化模型
+	model('table') => new table
+	url('admin/index/url2','a=1&b=2')		//绑定地址并传参
+	request()->param() 		=> input()			//接收传参(数组)
+	request()->param('name') 	=> input('name')	
+	request()->param('name') 	=> input('name')
+	request()->get()		=> input('get.')
+	request()->post('name')		=> input('post.name')
+	request()->cookie()		=> input('cookie.')
+	request()->file('image')	=> input('file.image')
+	/*request其他参数*/
+    	echo "=====request其他参数====================<br/>";
+    	echo "请求方法：".$request->method()."<br/>";
+    	echo "访问ip：".$request->ip()."<br/>";
+    	echo "是否ajax请求：" .($request->isAjax()?'是':'否')."<br/>";
+    	echo "当前域名：".$request->domain()."<br/>";
+    	echo "当前入口文件：".$request->baseFile()."<br/>";
+    	echo "包含域名的完整url地址：".$request->url(true)."<br/>";
+    	echo "url地址的参数信息：".$request->query()."<br/>";
+    	echo "当前url地址  不含QUERY_STRING：".$request->baseUrl()."<br/>";
+    	echo "url地址中的pathinfo信息：".$request->pathinfo()."<br/>";
+    	echo "url地址中的后缀信息：".$request->ext()."<br/>";
+    	/*request当前模块/控制器/操作信息*/
+    	echo "=====request当前模块/控制器/操作信息=======<br/>";
+    	echo "模块：".$request->module()."<br/>";
+    	echo "控制器：".$request->controller()."<br/>";
+    	echo "方法：".$request->action()."<br/>";
+
+	return json($arr);
+	$this->error("错误页面提示","/hello2");			//默认跳转到：域名/hello2
+	$this->error("错误页面提示","hello2");			//默认跳转到：域名/index/index/hello2
+	$this->redirect('/hello2');				//同上
+	
+10./*连接多个数据库，在config.php中加配置*/
+    	$result = Db::connect('db2')->query('select * from type');
+	
+11.tp5向数据库添加数据
+	两种方法：save与insert(不能用add)
+	1.	$region = new Region;
+        	$region->name = "天津市";
+        	$region->level = 1;
+        	$region->parent_id = 0;
+        	$region->save();
+
+		// 批量新增
+		$user = model('User');
+		$list = [
+    			['name'=>'thinkphp','email'=>'thinkphp@qq.com'],
+    			['name'=>'onethink','email'=>'onethink@qq.com']
+		];
+		$user->saveAll($list);
+	2.	$data[] = array('name'=>'运城市','level'=>4);
+        	$data[] = array('name'=>'西安市','level'=>2);
+        	$result = $region->insertAll($data);//返回添加的条数
+12.修改数据
+	1.	//save
+		$region = model('Region');
+        	$region->region_id = 4;
+        	$region->name = "运城市2";
+        	$region->level = 4;
+        	$region->parent_id = 0;
+        	$region->isUpdate(true)->save();
+		==============================================================
+		$region = model('Region');
+        	$data['region_id'] = 20;
+        	$data['name'] = '运市';
+        	$data['level'] = 4;
+        	$result=$region->isUpdate(true)->save($data);
+		===================================================================
+		$user = new User;
+		// save方法第二个参数为更新条件
+		$user->save([
+    			'name'  => 'thinkphp',
+    			'email' => 'thinkphp@qq.com'
+		],['id' => 1]);
+		==============================================================
+		$user = new User();
+		// 过滤post数组中的非数据表字段数据
+		$user->allowField(true)->save($_POST,['id' => 1]);
+	2.	//update
+		$region = model('Region');
+        	$data['name'] = '运市';
+        	$data['level'] = 4;
+        	$result=$region->where("region_id",20)->update($data);
+	3.	批量更新
+		$user = new User;
+		$list = [
+    			['id'=>1, 'name'=>'thinkphp', 'email'=>'thinkphp@qq.com'],
+    			['id'=>2, 'name'=>'onethink', 'email'=>'onethink@qq.com']
+		];
+		$user->saveAll($list);
